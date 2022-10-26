@@ -21,12 +21,12 @@ import {Toy} from "@/Models/Toy";
 import {Tag} from "@/Models/Tag";
 import classNames from "classnames";
 import {useSanctum} from "react-sanctum";
-import {Link} from "react-router-dom";
 import "./TaskCard.css";
 import {spring} from "react-flip-toolkit";
 import {RWebShare} from "react-web-share";
 import {motion, useAnimationControls, useInView, useMotionValue, useTransform} from "framer-motion";
 import CommentListItem from "@/Components/CommentListItem";
+import {Link} from "@tanstack/react-location";
 
 const onAppear = (el: any, i: any) => {
     spring({
@@ -167,7 +167,7 @@ interface TaskCardProps {
 
 const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
     const ref = useRef(null)
-    const isInView = useInView(ref)
+    // const isInView = useInView(ref)
     const {classes, theme} = useStyles();
     const [commentsOpened, setCommentsOpened] = useState<boolean>(false);
     const {user} = useSanctum();

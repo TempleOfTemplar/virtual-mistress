@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import {useForm} from "@mantine/form";
 import {useSanctum} from "react-sanctum";
-import {useLocation, useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from "@tanstack/react-location";
 
 const useStyles = createStyles((theme) => ({
     socialLoginButtonIcon: {
@@ -42,7 +42,7 @@ const Login = ()=> {
     });
     const authenticatedCallback = () => {
         // let {from} = location.state || {from: {pathname: '/tasks'}}
-        navigate(`/tasks`);
+        navigate({to:`/tasks`});
     }
 
     function onSubmit(values: any) {

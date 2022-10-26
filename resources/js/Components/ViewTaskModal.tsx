@@ -1,13 +1,15 @@
 import NiceModal, {useModal} from '@ebay/nice-modal-react';
 import {Modal} from '@mantine/core';
-import {motion} from "framer-motion";
 import React from "react";
-import {useParams} from "react-router-dom";
+import {useMatch} from "@tanstack/react-location";
+import {LocationGenerics} from "@/routes";
 
 export default NiceModal.create(({outlet}) => {
     console.log("outlet", outlet);
     const modal = useModal();
-    let {taskId} = useParams<string>();
+    const {
+        params: { taskId },
+    } = useMatch<LocationGenerics>();
     const mm = document.getElementById('modal-manager');
     return (
         <Modal

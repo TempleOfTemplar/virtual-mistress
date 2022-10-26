@@ -1,5 +1,4 @@
 import React, {FC, useEffect, useMemo, useState} from 'react';
-import {useParams} from "react-router-dom";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {createTask, editTask, fetchTaskById} from "@/services/TasksService";
 import {Tag} from "@/Models/Tag";
@@ -14,6 +13,8 @@ import {OutputData} from "@editorjs/editorjs";
 import {Flipped, spring} from "react-flip-toolkit";
 import {Button, Center, Container, Group, Input, Loader, MultiSelect, Select, Textarea, TextInput} from "@mantine/core";
 import MDEditor from "@uiw/react-md-editor";
+import {useMatch} from "@tanstack/react-location";
+import {LocationGenerics} from "@/routes";
 
 const onAppear = (el: any, i: any) => {
     spring({
@@ -37,7 +38,9 @@ type CreateOrEditTaskModalProps = {
 }
 
 const CreateOfEditTaskModal: FC<CreateOrEditTaskModalProps> = () => {
-    let {taskId} = useParams();
+    const {
+        params: { taskId },
+    } = useMatch<LocationGenerics>();
     const editMode = useMemo(() => {
         return !(taskId === undefined);
     }, [taskId]);

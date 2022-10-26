@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Facades\MediaFacade as Media;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateTaskAPIRequest;
 use App\Http\Requests\API\UpdateTaskAPIRequest;
@@ -39,26 +38,27 @@ class TaskAPIController extends AppBaseController
         $cursor = $request->input('cursor');
 
         $tasks = Task::withCount('likers')
-
             ->where("is_published", 1)
+            ->with('toys')
+            ->with('tags')
             ->when($searchQuery, function ($query, $search) {
                 $query->where('title', 'like', '%' . $search . '%')
                     ->OrWhere('excerpt', 'like', '%' . $search . '%');
             })->when($toysFilter, function ($query, $toysFilter) {
                 $query->whereHas('toys', function ($query) use ($toysFilter) {
                     $query->whereIn('toy_id', $toysFilter);
-                });
+                }, '=', count($toysFilter));
             })
             ->when($tagsFilter, function ($query, $tagsFilter) {
                 $query->whereHas('tags', function ($query) use ($tagsFilter) {
-                    $query->whereIn('tag_id', $tagsFilter);
-                });
+                    $query->whereIn('taggable_taggables.tag_id', $tagsFilter);
+                }, '=', count($tagsFilter));
             })
-            ->with('toys')
             ->with('category')
             ->with('tags')
             ->with('author')
             ->with('comments')
+
             ->orderBy('id')
 //            ->load(['toys','category','tags','author','comments'])
             ->cursorPaginate(15, ['*'], 'cursor', $cursor);

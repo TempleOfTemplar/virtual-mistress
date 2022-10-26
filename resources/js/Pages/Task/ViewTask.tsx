@@ -17,7 +17,6 @@ import {
     TypographyStylesProvider
 } from "@mantine/core";
 import {Carousel} from "@mantine/carousel";
-import {useParams} from 'react-router-dom';
 import {Tag} from "@/Models/Tag";
 import {Toy} from "@/Models/Toy";
 import {spring} from "react-flip-toolkit";
@@ -29,6 +28,8 @@ import {useForm} from "@mantine/form";
 import {useAddTaskCommentMutation} from "@/queries/useAddTaskCommentMutation";
 import useTaskCommentsQuery from "@/queries/useTaskCommentsQuery";
 import {motion} from "framer-motion";
+import {useMatch} from "@tanstack/react-location";
+import {LocationGenerics} from "@/routes";
 
 const useStyles = createStyles((theme) => ({}));
 
@@ -54,7 +55,9 @@ interface AddCommentFormValues {
 }
 
 const ViewTask: FC<any> = () => {
-        let {taskId} = useParams<string>();
+        const {
+            params: {taskId},
+        } = useMatch<LocationGenerics>();
 
         const {data: task, isLoading: taskLoading} = useQuery(["tasks", taskId], () => fetchTaskById(taskId));
         const {data: comments, isLoading: commentsLoading} = useTaskCommentsQuery(taskId);

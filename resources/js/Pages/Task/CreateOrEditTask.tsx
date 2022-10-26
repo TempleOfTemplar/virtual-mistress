@@ -1,7 +1,6 @@
 import React, {useEffect, useMemo} from 'react';
 import {Button, Center, Container, Group, Input, Loader, MultiSelect, Select, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {fetchToys} from "@/services/ToysService";
 import {fetchTags} from "@/services/TagsService";
@@ -34,7 +33,10 @@ import {indent} from "@milkdown/plugin-indent";
 import {block} from "@milkdown/plugin-block";
 import {slash} from "@milkdown/plugin-slash";
 import {history} from "@milkdown/plugin-history";
-import VerbumEditor from "@/Components/VerbumEditor";
+import VerbumEditor from "@/Components/Verbum/VerbumEditor";
+import {useMatch, useNavigate} from "@tanstack/react-location";
+import {LocationGenerics} from "@/routes";
+import {LexicalEditor} from "lexical";
 
 // const ReactEditorJS = createReactEditorJS()
 const plugins = [
@@ -64,7 +66,10 @@ const onAppear = (el: any, i: any) => {
     });
 };
 const CreateOrEditTask = () => {
-        let {taskId} = useParams();
+        const {
+            params: {taskId},
+        } = useMatch<LocationGenerics>();
+        console.log("taskId", taskId);
         const navigation = useNavigate();
         const theme: any = useTheme();
 
@@ -214,7 +219,7 @@ const CreateOrEditTask = () => {
                 },
                 // Always refetch after error or success:
                 onSuccess: () => {
-                    navigation(-1);
+                    navigation({to: -1});
                     // queryClient.cancelQueries(['tasks'])
                     // queryClient.invalidateQueries(['todos'])
                 },
@@ -260,7 +265,7 @@ const CreateOrEditTask = () => {
                             queryFromListPageItem.invalidate();
                         })
                     }
-                    navigation('/tasks/my');
+                    navigation({to: '/tasks/my'});
                     // queryClient.cancelQueries(['tasks'])
                     // queryClient.invalidateQueries(['todos'])
                 },
@@ -301,7 +306,9 @@ const CreateOrEditTask = () => {
         // );
         // const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-        function handleEditorChange({html, text}: any) {
+        function handleEditorChange(editorState: string, editorInstance?: LexicalEditor) {
+            console.log("editorState", editorState);
+            console.log("editorInstance", editorInstance);
         }
 
         const handleImageUpload = async (file: any) => {
@@ -401,7 +408,8 @@ const CreateOrEditTask = () => {
                                 {/*    }}*/}
                                 {/*/>*/}
 
-                                <VerbumEditor/>
+                                {/*<LexicalEditor/>*/}
+                                <VerbumEditor onChange={handleEditorChange}/>
                                 {/*<ReactEditor editor={editor}/>*/}
 
                                 {/*<VditorSVEditor keyID="content-editor" bindVditor={setVditor} options={{*/}

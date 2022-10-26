@@ -41,8 +41,8 @@ class TasksSeeder extends Seeder
                 ],
             ))
             ->afterCreating(function (Task $task) use ($tagsCount, $toysCount, $sentencesArray) {
-                $randomTags = TaskTag::all()->random(rand(2, round($tagsCount / 2)))->pluck('name')->toArray();
-                $task->tag(...$randomTags);
+                $randomTags = TaskTag::all()->random(rand(2, round($tagsCount / 2)))->pluck('tag_id')->toArray();
+                $task->tagById($randomTags);
                 $randomToys = Toy::all()->random(rand(1, round($toysCount / 2)))->pluck('id');
                 $task->toys()->attach($randomToys);
                 foreach ($sentencesArray as &$value) {

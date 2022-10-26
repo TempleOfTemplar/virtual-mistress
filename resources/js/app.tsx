@@ -1,21 +1,13 @@
 import React, {useState} from 'react';
-import {createBrowserRouter, Outlet, RouterProvider} from 'react-router-dom';
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/auth/Login";
-import Register from "./Pages/Auth/Register";
-import ViewTask from "./Pages/Task/ViewTask";
-import {AppShell, ColorScheme, ColorSchemeProvider, createStyles, Footer, MantineProvider} from "@mantine/core";
-import AppHeader from "@/Components/AppHeader";
+import {ColorScheme, ColorSchemeProvider, createStyles, MantineProvider} from "@mantine/core";
 import {NotificationsProvider} from "@mantine/notifications";
 import {QueryClient} from "@tanstack/react-query";
-import {taskLoader} from "@/Loaders/TaskLoader";
-import {ReactRouter6Adapter} from "use-query-params/adapters/react-router-6";
-import {QueryParamProvider} from "use-query-params";
-import ListTasksInfinite from "@/Pages/Task/ListTasksInfinite";
-import {AnimateSharedLayout} from 'framer-motion';
 import {ModalsProvider} from '@mantine/modals';
 import NiceModal from '@ebay/nice-modal-react';
-import CreateOrEditTask from "@/Pages/Task/CreateOrEditTask";
+import {Router} from '@tanstack/react-location';
+import {routes} from "@/routes";
+import {location} from './routes';
+import Layout from "@/Components/Layout";
 
 const simultaneousAnimations = ({
                                     hideEnteringElements,
@@ -80,59 +72,58 @@ const queryClient = new QueryClient({
 {/*    <Route path="*" element={<Navigate to={'tasks'}/>}/>*/
 }
 
-const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <QueryParamProvider adapter={ReactRouter6Adapter}>
-            <AppShell
-                footer={
-                    <Footer height={60} p="md">
-                        Application footer
-                    </Footer>
-                }
-                padding={0}
-                header={
-                    <AppHeader>
-                    </AppHeader>
-                }
-            >
-                <AnimateSharedLayout>
-                    <Outlet/>
-                </AnimateSharedLayout>
-            </AppShell>
-        </QueryParamProvider>,
-        children: [
-            {
-                path: 'login',
-                element: <Login/>
-            },
-            {
-                path: 'register',
-                element: <Register/>
-            },
-            {
-                path: 'tasks',
-                element: <ListTasksInfinite/>,
-                children: [
-                    {
-                        path: "edit/:taskId",
-                        element: <CreateOrEditTask/>
-                    },
-                    {
-                        path: ":taskId",
-                        element: <ViewTask/>
-                    },
-                    {
-                        path: "dashboard",
-                        element: <Dashboard/>,
-
-                    },
-                ],
-            }
-        ]
-    },
-
-]);
+// const router = createBrowserRouter([
+//     {
+//         path: "/",
+//         element: <QueryParamProvider adapter={ReactRouter6Adapter}>
+//             <AppShell
+//                 footer={
+//                     <Footer height={60} p="md">
+//                         Application footer
+//                     </Footer>
+//                 }
+//                 padding={0}
+//                 header={
+//                     <AppHeader>
+//                     </AppHeader>
+//                 }
+//             >
+//                 <AnimateSharedLayout>
+//                     <Outlet/>
+//                 </AnimateSharedLayout>
+//             </AppShell>
+//         </QueryParamProvider>,
+//         children: [
+//             {
+//                 path: 'login',
+//                 element: <Login/>
+//             },
+//             {
+//                 path: 'register',
+//                 element: <Register/>
+//             },
+//             {
+//                 path: 'tasks',
+//                 element: <ListTasksInfinite/>,
+//                 children: [
+//                     {
+//                         path: "edit/:taskId",
+//                         element: <CreateOrEditTask/>
+//                     },
+//                     {
+//                         path: ":taskId",
+//                         element: <ViewTask/>
+//                     },
+//                     {
+//                         path: "dashboard",
+//                         element: <Dashboard/>,
+//
+//                     },
+//                 ],
+//             }
+//         ]
+//     },
+// ]);
 
 function App() {
     //Getting isAuthenticated store value from Authentication reducer.
@@ -162,7 +153,31 @@ function App() {
             <ModalsProvider>
                 <NotificationsProvider>
                     <NiceModal.Provider>
-                        <RouterProvider router={router}/>
+                        <Router
+                            location={location}
+                            routes={routes}
+                            defaultPendingElement={
+                                <div>
+                                    ...SPINNER...
+                                </div>
+                            }
+                            // defaultLinkPreloadMaxAge={defaultLinkPreloadMaxAge}
+                            // defaultLoaderMaxAge={defaultLoaderMaxAge}
+                            // defaultPendingMs={defaultPendingMs}
+                            // defaultPendingMinMs={defaultPendingMinMs}
+                            // Normally, the options above aren't changing, but for this particular
+                            // example, we need to key the router when they change
+                            // key={[
+                            //     defaultLinkPreloadMaxAge,
+                            //     defaultLoaderMaxAge,
+                            //     defaultPendingMs,
+                            //     defaultPendingMinMs,
+                            // ].join(".")}
+                        >
+                            <Layout />
+                            {/*<ReactLocationDevtools position="bottom-right" />*/}
+                        </Router>
+                        {/*<RouterProvider router={router}/>*/}
                     </NiceModal.Provider>
 
                     {/*<Routes>*/}

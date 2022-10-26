@@ -2,11 +2,11 @@ import React from 'react';
 import TaskCard from "../../Components/TaskCard";
 import {Affix, Button, Center, Container, Loader, SimpleGrid, Title} from "@mantine/core";
 import {IconCirclePlus} from "@tabler/icons";
-import {Task} from "../../Models/Task";
 import {useQuery} from "@tanstack/react-query";
 import {fetchMyTasks} from "@/services/TasksService";
-import {Link} from "react-router-dom";
 import {useUpdateIsFavorite} from "@/queries/useSetTaskFavorite";
+import {Task} from "@/Models/Task";
+import {Link} from "@tanstack/react-location";
 
 
 //href={route("tasks.edit", id)}

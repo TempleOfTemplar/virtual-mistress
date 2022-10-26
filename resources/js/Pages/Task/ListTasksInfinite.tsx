@@ -19,7 +19,6 @@ import {Task} from "@/Models/Task";
 import {Tag} from "@/Models/Tag";
 import {Toy} from "@/Models/Toy";
 import {Category} from "@/Models/Category";
-import {ArrayParam, StringParam, useQueryParams} from "use-query-params";
 import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
 import {fetchTasksWithPagination} from "@/services/TasksService";
 import {fetchToys} from "@/services/ToysService";
@@ -31,12 +30,10 @@ import {useInView} from "react-intersection-observer";
 import TaskCard from "@/Components/TaskCard";
 import {TasksCursorPaginator} from "@/Models/CursorPaginator";
 import {VirtuosoGrid} from 'react-virtuoso'
-import {useNavigate, useOutlet} from 'react-router-dom';
-import {createPortal} from "react-dom";
 import {useModal} from "@ebay/nice-modal-react";
 import ViewTaskModal from "@/Components/ViewTaskModal";
-import ReactModal from "react-modal";
-import {motion} from "framer-motion";
+import {useNavigate, useSearch} from "@tanstack/react-location";
+import {LocationGenerics} from "@/routes";
 
 export const bounce = keyframes({
     '0%': {
@@ -62,90 +59,98 @@ export const slideInElleptic = keyframes({
     }
 });
 
-const useStyles = createStyles((theme, params, getRef) =>
-    {
-        return {
-            gridList: {
-                display: "flex",
-                flexWrap: "wrap"
-            },
+const useStyles = createStyles((theme, params, getRef) => {
+    return {
+        gridList: {
+            display: "flex",
+            flexWrap: "wrap",
+            gap: '4px'
+        },
 
-            gridItem: {
-                width: "100%",
-                // virtualRow.index % 3
-                // animation: `${bounce} 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both`,
-                [`@media (min-width: 768px)`]: {
-                    width: 'calc(100% / 2)'
-                },
-                [`@media (min-width: 1024px)`]: {
-                    width: 'calc(100% / 3)'
-                },
-                // '&[data-index$="0"]': {
-                //     animation: "none"
-                //     /* Attribute value ends with this */
-                // },
-                // '&[data-index$="3"]': {
-                //     animation: "none"
-                //     /* Attribute value ends with this */
-                // },
-                // '&[data-index$="6"]': {
-                //     animation: "none"
-                //     /* Attribute value ends with this */
-                // },
+        gridItem: {
+            width: "100%",
+            // virtualRow.index % 3
+            // animation: `${bounce} 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both`,
+            [`@media (min-width: 768px)`]: {
+                width: 'calc((100% / 2) - 4px + (4px / 2))'
             },
-            // 'gridItem[data-value$="1"]': {
+            [`@media (min-width: 1024px)`]: {
+                width: 'calc((100% / 3) - 4px + (4px / 3))'
+            },
+            // '&[data-index$="0"]': {
+            //     animation: "none"
             //     /* Attribute value ends with this */
             // },
-        }
-    });
+            // '&[data-index$="3"]': {
+            //     animation: "none"
+            //     /* Attribute value ends with this */
+            // },
+            // '&[data-index$="6"]': {
+            //     animation: "none"
+            //     /* Attribute value ends with this */
+            // },
+        },
+        // 'gridItem[data-value$="1"]': {
+        //     /* Attribute value ends with this */
+        // },
+    }
+});
 
 //href={route("tasks.edit", id)}
 const ListTasksInfinite = () => {
     const {ref, inView} = useInView()
     const parentRef = useRef<any>()
     const {classes, theme} = useStyles();
-    const navigate = useNavigate();
-    const outlet = useOutlet();
+    const navigate = useNavigate<LocationGenerics>();
     const taskModal = useModal(ViewTaskModal);
     // NiceModal.show(MyAntdModal, { name: 'Nate' })
-    useEffect(() => {
-        if (!!outlet) {
-            // createPortal(outlet,
-            //     document.getElementById("modal-manager")
-            // );
-            if (!taskModal.visible) {
-                taskModal.show({outlet}).then(() => {
-                    taskModal.remove();
-                    navigate(-1);
-                    // taskModal.remove();
-                });
-            }
+    // useEffect(() => {
+    // if (!!outlet) {
+    //     // createPortal(outlet,
+    //     //     document.getElementById("modal-manager")
+    //     // );
+    //     if (!taskModal.visible) {
+    //         taskModal.show({outlet}).then(() => {
+    //             taskModal.remove();
+    //             navigate(-1);
+    //             // taskModal.remove();
+    //         });
+    //     }
+    //
+    //     // return createPortal(
+    //     //     outlet,
+    //     //     document.getElementById("modal-manager")
+    //     // );
+    //     // const modal = NiceModal.show(outlet, {someProp: 'hello'}).then(() => {
+    //     //     // do something if the task in the modal finished.
+    //     // });
+    // } else {
+    //     taskModal.remove();
+    // }
+    // return ReactDOM.createPortal(
+    //     this.props.children,
+    //     document.wi
+    // );
+    // if(outlet) {
+    //     openModal({
+    //         onClose: ()=>{
+    //             navigate(-1);
+    //         },
+    //         children: outlet,
+    //     });
+    // } else {
+    //     closeAllModals();
+    // }
+    // }, [outlet]);
+    const query = useSearch<LocationGenerics>();
+    console.log("query", query);
+    const updateIsFavorite = useUpdateIsFavorite("tasks", query);
+    const updateIsLiked = useUpdateIsLiked("tasks", query);
 
-            // return createPortal(
-            //     outlet,
-            //     document.getElementById("modal-manager")
-            // );
-            // const modal = NiceModal.show(outlet, {someProp: 'hello'}).then(() => {
-            //     // do something if the task in the modal finished.
-            // });
-        } else {
-            taskModal.remove();
-        }
-        // return ReactDOM.createPortal(
-        //     this.props.children,
-        //     document.wi
-        // );
-        // if(outlet) {
-        //     openModal({
-        //         onClose: ()=>{
-        //             navigate(-1);
-        //         },
-        //         children: outlet,
-        //     });
-        // } else {
-        //     closeAllModals();
-        // }
-    }, [outlet]);
+
+    const [firstTasksLoaded, setFirstTasksLoaded] = useState<boolean>(false);
+
+    const {search, category, toys, tags} = query;
 
     const {
         status,
@@ -159,7 +164,7 @@ const ListTasksInfinite = () => {
         hasNextPage,
         hasPreviousPage,
     } = useInfiniteQuery<TasksCursorPaginator>(
-        ['tasks'],
+        ['tasks', query],
         fetchTasksWithPagination,
         {
             getPreviousPageParam: (firstPage) => {
@@ -203,19 +208,13 @@ const ListTasksInfinite = () => {
     // ])
 
 
-    const [query, setQuery] = useQueryParams({
-        search: StringParam,
-        category: StringParam,
-        toys: ArrayParam,
-        tags: ArrayParam,
-    }, {});
-    const updateIsFavorite = useUpdateIsFavorite("tasks", query);
-    const updateIsLiked = useUpdateIsLiked("tasks", query);
+    // const [query, setQuery] = useQueryParams({
+    //     search: StringParam,
+    //     category: StringParam,
+    //     toys: ArrayParam,
+    //     tags: ArrayParam,
+    // }, {});
 
-
-    const [firstTasksLoaded, setFirstTasksLoaded] = useState<boolean>(false);
-
-    const {search, category, toys, tags} = query;
     // const {
     //     isLoading: tasksLoading,
     //     error: tasksError,
@@ -229,25 +228,10 @@ const ListTasksInfinite = () => {
     console.log("tasksList", tasksList);
 
     const loadMore = useCallback(() => {
-        console.log("LOAD MORE");
-        fetchNextPage();
-    }, []);
-    // const rowVirtualizer = useVirtualizer({
-    //     count: hasNextPage ? tasksList.length + 1 : tasksList.length,
-    //     getScrollElement: () => parentRef?.current,
-    //     estimateSize: () => 467,
-    //     horizontal: false,
-    //     overscan: 6,
-    // })
-    // console.log(tasksList);
-
-    // useEffect(() => {
-    //     if (tasksLoading) {
-    //         if (!firstTasksLoaded) {
-    //             setFirstTasksLoaded(true);
-    //         }
-    //     }
-    // }, [tasksLoading]);
+        if(hasNextPage) {
+            fetchNextPage();
+        }
+    }, [hasNextPage]);
 
     const {
         isLoading: toysLoading,
@@ -269,15 +253,23 @@ const ListTasksInfinite = () => {
     useEffect(() => {
         if (search?.length) {
             setSearchQuery(search);
+        } else {
+            setSearchQuery('');
         }
         if (category) {
             setCategoryFilter(Number(category));
+        } else {
+            setCategoryFilter('');
         }
         if (toys?.length) {
             setToysFilter(toys.map(toyId => Number(toyId)));
+        } else {
+            setToysFilter([]);
         }
         if (tags?.length) {
             setTagsFilter(tags.map(tagId => Number(tagId)));
+        } else {
+            setTagsFilter([]);
         }
     }, [search, category, toys, tags]);
 
@@ -313,29 +305,40 @@ const ListTasksInfinite = () => {
     const [categoryFilter, setCategoryFilter] = useState<any>();
 
     // из контролов в queryParams
-    useEffect(() => {
-        const qsParams: any = {};
-        qsParams.search = debouncedSearchQuery ? debouncedSearchQuery : null;
-        qsParams.toys = toysFilter ? toysFilter : null;
-        qsParams.category = categoryFilter ? categoryFilter : null;
-        qsParams.tags = tagsFilter ? tagsFilter : null;
-        setQuery(qsParams);
-    }, [debouncedSearchQuery, toysFilter, categoryFilter, tagsFilter]);
-
     function onSearchQueryChange(e: ChangeEvent<HTMLInputElement>) {
-        setSearchQuery(e.target.value)
+        navigate({
+            search: (old) => ({
+                ...old,
+                search: e.target.value
+            }),
+        })
     }
 
     function onToysFilterChange(selectedToys: string[]) {
-        setToysFilter(selectedToys)
+        navigate({
+            search: (old) => ({
+                ...old,
+                toys: selectedToys
+            }),
+        })
     }
 
     function onTagsFilterChange(selectedTags: string[]) {
-        setTagsFilter(selectedTags)
+        navigate({
+            search: (old) => ({
+                ...old,
+                tags: selectedTags
+            }),
+        })
     }
 
     function onCategoryFilterChange(selectedCategory: string) {
-        setCategoryFilter(selectedCategory)
+        navigate({
+            search: (old) => ({
+                ...old,
+                category: selectedCategory
+            }),
+        })
     }
 
     // const allRows = data ? data.pages.flatMap((d) => d.rows) : [];
@@ -377,7 +380,6 @@ const ListTasksInfinite = () => {
                         </Group>
                     </Stack>
                     <Space h="md"/>
-                    {tasksList.length}
                     <div className="overflow-x-auto bg-white rounded shadow">
                         {status === 'loading' ? (
                             <p>Loading...</p>

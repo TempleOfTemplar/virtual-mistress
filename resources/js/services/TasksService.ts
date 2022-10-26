@@ -9,11 +9,11 @@ export async function fetchTasks(filterData: any): Promise<Task[]> {
 }
 
 export async function fetchTasksWithPagination(
-    { pageParam = 0 }: any
+    data: any
 ): Promise<TasksCursorPaginator> {
-    const res = await api().get('/api/tasks', {params: {cursor: pageParam}})
-    // await new Promise((r) => setTimeout(r, 500))
-
+    const {pageParam = 0, queryKey} = data;
+    const [, filters] = queryKey;
+    const res = await api().get('/api/tasks', {params: {cursor: pageParam, ...filters}})
     return res.data;
 }
 

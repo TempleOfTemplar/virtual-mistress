@@ -1,9 +1,9 @@
 import React from 'react';
 import {Button, Group, TextInput,} from '@mantine/core';
-import {useNavigate} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import {withSanctum} from "react-sanctum";
 import axios from "axios";
+import {useNavigate} from "@tanstack/react-location";
 
 const Register = ({setUser}) => {
     const navigate = useNavigate();
@@ -39,7 +39,7 @@ const Register = ({setUser}) => {
 
     const authenticatedCallback = () => {
         // let {from} = location.state || {from: {pathname: '/tasks'}}
-        navigate(`/tasks`);
+        navigate({to:`/tasks`});
     }
 
     return (

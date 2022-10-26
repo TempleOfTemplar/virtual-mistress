@@ -5,7 +5,7 @@ import {IconChevronDown, IconTrash,} from '@tabler/icons';
 import ApplicationLogo from "./ApplicationLogo";
 import DarkThemeToggle from "./DarkThemeToggle";
 import {useSanctum, withSanctum} from "react-sanctum";
-import {Link} from "react-router-dom";
+import {Link} from "@tanstack/react-location";
 
 const HEADER_HEIGHT = 60;
 const useStyles = createStyles((theme) => ({

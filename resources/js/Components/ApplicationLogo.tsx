@@ -1,6 +1,6 @@
+import { Link } from '@tanstack/react-location';
 import React from 'react';
 import appLogo from "../../public/logo.webp"
-import {Link} from "react-router-dom";
 
 
 export default function ApplicationLogo({className}) {
