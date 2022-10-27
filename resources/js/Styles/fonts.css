@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'aa_neonregular';
+    src: url('../../fonts/aa-neon-webfont.woff2') format('woff2'),
+    url('../../fonts/aa-neon-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'LIBRARY 3 AM soft';
+    src: url('../../fonts/subset-LIBRARY3AMsoft.woff2') format('woff2'),
+    url('../../fonts/subset-LIBRARY3AMsoft.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'LIBRARY 3 AM';
+    src: url('../../fonts/subset-LIBRARY3AM.woff2') format('woff2'),
+    url('../../fonts/subset-LIBRARY3AM.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

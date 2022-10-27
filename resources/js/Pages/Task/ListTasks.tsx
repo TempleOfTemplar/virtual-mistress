@@ -1,5 +1,4 @@
 import React, {ChangeEvent, useEffect, useMemo, useState} from 'react';
-import TaskCard from "../../Components/TaskCard";
 import {
     Affix,
     Button,
@@ -29,6 +28,7 @@ import {fetchTags} from "@/services/TagsService";
 import {fetchCategories} from "@/services/CategoriesService";
 import {useUpdateIsFavorite} from "@/queries/useSetTaskFavorite";
 import {useUpdateIsLiked} from "@/queries/useSetTaskLiked";
+import TaskCard from "@/Components/TaskCard/TaskCard";
 
 
 //href={route("tasks.edit", id)}

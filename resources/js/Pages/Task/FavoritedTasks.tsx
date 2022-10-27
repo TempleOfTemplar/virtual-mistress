@@ -1,11 +1,11 @@
 import React from 'react';
-import TaskCard from "../../Components/TaskCard";
 import {Affix, Button, Center, Container, Loader, SimpleGrid, Title} from "@mantine/core";
 import {IconCirclePlus} from "@tabler/icons";
 import {useQuery} from "@tanstack/react-query";
 import {fetchFavoriteTasks} from "@/services/TasksService";
 import {Task} from "@/Models/Task";
 import {Link} from "@tanstack/react-location";
+import TaskCard from "@/Components/TaskCard/TaskCard";
 
 const FavoritedTasks = () => {
     const {

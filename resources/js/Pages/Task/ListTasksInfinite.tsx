@@ -26,14 +26,14 @@ import {fetchTags} from "@/services/TagsService";
 import {fetchCategories} from "@/services/CategoriesService";
 import {useUpdateIsFavorite} from "@/queries/useSetTaskFavorite";
 import {useUpdateIsLiked} from "@/queries/useSetTaskLiked";
-import {useInView} from "react-intersection-observer";
-import TaskCard from "@/Components/TaskCard";
 import {TasksCursorPaginator} from "@/Models/CursorPaginator";
 import {VirtuosoGrid} from 'react-virtuoso'
 import {useModal} from "@ebay/nice-modal-react";
 import ViewTaskModal from "@/Components/ViewTaskModal";
 import {useNavigate, useSearch} from "@tanstack/react-location";
 import {LocationGenerics} from "@/routes";
+import TaskCard from "@/Components/TaskCard/TaskCard";
+import {LayoutGroup} from "framer-motion";
 
 export const bounce = keyframes({
     '0%': {
@@ -64,7 +64,7 @@ const useStyles = createStyles((theme, params, getRef) => {
         gridList: {
             display: "flex",
             flexWrap: "wrap",
-            gap: '4px'
+            gap: '8px'
         },
 
         gridItem: {
@@ -72,10 +72,10 @@ const useStyles = createStyles((theme, params, getRef) => {
             // virtualRow.index % 3
             // animation: `${bounce} 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both`,
             [`@media (min-width: 768px)`]: {
-                width: 'calc((100% / 2) - 4px + (4px / 2))'
+                width: 'calc((100% / 2) - 8px + (8px / 2))'
             },
             [`@media (min-width: 1024px)`]: {
-                width: 'calc((100% / 3) - 4px + (4px / 3))'
+                width: 'calc((100% / 3) - 8px + (8px / 3))'
             },
             // '&[data-index$="0"]': {
             //     animation: "none"
@@ -98,7 +98,6 @@ const useStyles = createStyles((theme, params, getRef) => {
 
 //href={route("tasks.edit", id)}
 const ListTasksInfinite = () => {
-    const {ref, inView} = useInView()
     const parentRef = useRef<any>()
     const {classes, theme} = useStyles();
     const navigate = useNavigate<LocationGenerics>();
@@ -143,12 +142,8 @@ const ListTasksInfinite = () => {
     // }
     // }, [outlet]);
     const query = useSearch<LocationGenerics>();
-    console.log("query", query);
     const updateIsFavorite = useUpdateIsFavorite("tasks", query);
     const updateIsLiked = useUpdateIsLiked("tasks", query);
-
-
-    const [firstTasksLoaded, setFirstTasksLoaded] = useState<boolean>(false);
 
     const {search, category, toys, tags} = query;
 
@@ -174,6 +169,7 @@ const ListTasksInfinite = () => {
             getNextPageParam: (lastPage) => {
                 return lastPage.next_cursor
             },
+            keepPreviousData: true
         },
     )
 
@@ -237,17 +233,17 @@ const ListTasksInfinite = () => {
         isLoading: toysLoading,
         error: toysError,
         data: toysList,
-    } = useQuery(["toys"], fetchToys);
+    } = useQuery(["toys"], fetchToys, {keepPreviousData: true});
     const {
         isLoading: tagsLoading,
         error: tagsError,
         data: tagsList,
-    } = useQuery(["tags"], fetchTags);
+    } = useQuery(["tags"], fetchTags, {keepPreviousData: true});
     const {
         isLoading: categoriesLoading,
         error: categoriesError,
         data: categoriesList,
-    } = useQuery(["categories"], fetchCategories);
+    } = useQuery(["categories"], fetchCategories, {keepPreviousData: true});
 
     // из queryParams в контролы
     useEffect(() => {
@@ -385,8 +381,8 @@ const ListTasksInfinite = () => {
                             <p>Loading...</p>
                         ) : status === 'error' ? (
                             <span>Error: {(tasksError as Error).message}</span>
-                        ) : (
-                            tasksList.length ? <VirtuosoGrid
+                        ) : ( <LayoutGroup>
+                        (tasksList.length ? <VirtuosoGrid
                                 useWindowScroll
                                 overscan={200}
                                 data={tasksList}
@@ -409,8 +405,8 @@ const ListTasksInfinite = () => {
                                 //     exit: velocity => Math.abs(velocity) < 30,
                                 //     change: (_, range) => console.log({range}),
                                 // }}
-                            /> : null
-
+                            /> : null)
+                            </LayoutGroup>
                             // <div ref={parentRef}
                             //      className="List"
                             //      style={{

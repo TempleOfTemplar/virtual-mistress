@@ -1,6 +1,7 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {setTaskLiked} from "@/services/TasksService";
 import {Task} from "@/Models/Task";
+import {TasksCursorPaginator} from "@/Models/CursorPaginator";
 
 export const useUpdateIsLiked = (key = "tasks", query?: any) => {
     const queryClient = useQueryClient();
@@ -14,8 +15,10 @@ export const useUpdateIsLiked = (key = "tasks", query?: any) => {
             // When mutate is called:
             onMutate: async (taskId: string) => {
                 await queryClient.cancelQueries(queryKeyArray);
-                const previousTasks = queryClient.getQueryData<Task[]>(queryKeyArray);
-                if (previousTasks) {
+                const previousTasksPaginationData = queryClient.getQueryData<{pages: any}>(queryKeyArray);
+                if (previousTasksPaginationData?.pages) {
+                    const previousTasks = (previousTasksPaginationData as any).pages.map((page: any) => page.data).flat()
+                    console.log("prev", previousTasks, 'curr', taskId)
                     const taskToUpdateIndex = previousTasks.findIndex(task => task.id.toString() === taskId);
                     const tasksToUpdate = JSON.parse(JSON.stringify(previousTasks));
                     const hasLiked = tasksToUpdate[taskToUpdateIndex].has_liked;

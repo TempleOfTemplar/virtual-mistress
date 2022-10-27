@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
-import {ColorScheme, ColorSchemeProvider, createStyles, MantineProvider} from "@mantine/core";
-import {NotificationsProvider} from "@mantine/notifications";
+import {ColorScheme, createStyles} from "@mantine/core";
 import {QueryClient} from "@tanstack/react-query";
-import {ModalsProvider} from '@mantine/modals';
-import NiceModal from '@ebay/nice-modal-react';
 import {Router} from '@tanstack/react-location';
 import {routes} from "@/routes";
 import {location} from './routes';
-import Layout from "@/Components/Layout";
+import {createTheme, NextUIProvider} from "@nextui-org/react";
+import {ThemeProvider as NextThemesProvider} from 'next-themes';
+import Layout from "@/Components/Layout/Layout";
+import './global-styles.css';
 
 const simultaneousAnimations = ({
                                     hideEnteringElements,
@@ -124,6 +124,14 @@ const queryClient = new QueryClient({
 //         ]
 //     },
 // ]);
+const lightTheme = createTheme({
+    type: 'light',
+    theme: {}
+})
+const darkTheme = createTheme({
+    type: 'dark',
+    theme: {}
+})
 
 function App() {
     //Getting isAuthenticated store value from Authentication reducer.
@@ -148,58 +156,57 @@ function App() {
     const toggleColorScheme = (value?: ColorScheme) =>
         setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
-    return <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-        <MantineProvider theme={{colorScheme}} withGlobalStyles withNormalizeCSS>
-            <ModalsProvider>
-                <NotificationsProvider>
-                    <NiceModal.Provider>
-                        <Router
-                            location={location}
-                            routes={routes}
-                            defaultPendingElement={
-                                <div>
-                                    ...SPINNER...
-                                </div>
-                            }
-                            // defaultLinkPreloadMaxAge={defaultLinkPreloadMaxAge}
-                            // defaultLoaderMaxAge={defaultLoaderMaxAge}
-                            // defaultPendingMs={defaultPendingMs}
-                            // defaultPendingMinMs={defaultPendingMinMs}
-                            // Normally, the options above aren't changing, but for this particular
-                            // example, we need to key the router when they change
-                            // key={[
-                            //     defaultLinkPreloadMaxAge,
-                            //     defaultLoaderMaxAge,
-                            //     defaultPendingMs,
-                            //     defaultPendingMinMs,
-                            // ].join(".")}
-                        >
-                            <Layout />
-                            {/*<ReactLocationDevtools position="bottom-right" />*/}
-                        </Router>
-                        {/*<RouterProvider router={router}/>*/}
-                    </NiceModal.Provider>
+    return <NextThemesProvider defaultTheme="dark"
+                               attribute="class"
+                               value={{
+                                   light: lightTheme.className,
+                                   dark: darkTheme.className
+                               }}>
+        <NextUIProvider>
+            <Router
+                location={location}
+                routes={routes}
+                defaultPendingElement={
+                    <div>
+                        ...SPINNER...
+                    </div>
+                }
+                // defaultLinkPreloadMaxAge={defaultLinkPreloadMaxAge}
+                // defaultLoaderMaxAge={defaultLoaderMaxAge}
+                // defaultPendingMs={defaultPendingMs}
+                // defaultPendingMinMs={defaultPendingMinMs}
+                // Normally, the options above aren't changing, but for this particular
+                // example, we need to key the router when they change
+                // key={[
+                //     defaultLinkPreloadMaxAge,
+                //     defaultLoaderMaxAge,
+                //     defaultPendingMs,
+                //     defaultPendingMinMs,
+                // ].join(".")}
+            >
+                <Layout/>
+                {/*<ReactLocationDevtools position="bottom-right" />*/}
+            </Router>
+            {/*<RouterProvider router={router}/>*/}
 
-                    {/*<Routes>*/}
-                    {/*    <Route index element={<Dashboard/>}/>*/}
-                    {/*    <Route path='login' element={<Login/>}/>*/}
-                    {/*    <Route path='register' element={<Register/>}/>*/}
-                    {/*    <Route path="tasks">*/}
-                    {/*        <Route path='' element={<ListTasks/>}/>*/}
-                    {/*        <Route path='add' element={<CreateOrEditTask/>}/>*/}
-                    {/*        <Route path=':taskId'*/}
-                    {/*               element={<ViewTask/>}*/}
-                    {/*        />*/}
-                    {/*        <Route path='edit/:taskId' element={<CreateOrEditTask/>}/>*/}
-                    {/*        <Route path='favorite' element={<FavoritedTasks/>}/>*/}
-                    {/*        <Route path='my' element={<ListMyTasks/>}/>*/}
-                    {/*    </Route>*/}
-                    {/*    <Route path="*" element={<Navigate to={'tasks'}/>}/>*/}
-                    {/*</Routes>*/}
-                </NotificationsProvider>
-            </ModalsProvider>
-        </MantineProvider>
-    </ColorSchemeProvider>
+            {/*<Routes>*/}
+            {/*    <Route index element={<Dashboard/>}/>*/}
+            {/*    <Route path='login' element={<Login/>}/>*/}
+            {/*    <Route path='register' element={<Register/>}/>*/}
+            {/*    <Route path="tasks">*/}
+            {/*        <Route path='' element={<ListTasks/>}/>*/}
+            {/*        <Route path='add' element={<CreateOrEditTask/>}/>*/}
+            {/*        <Route path=':taskId'*/}
+            {/*               element={<ViewTask/>}*/}
+            {/*        />*/}
+            {/*        <Route path='edit/:taskId' element={<CreateOrEditTask/>}/>*/}
+            {/*        <Route path='favorite' element={<FavoritedTasks/>}/>*/}
+            {/*        <Route path='my' element={<ListMyTasks/>}/>*/}
+            {/*    </Route>*/}
+            {/*    <Route path="*" element={<Navigate to={'tasks'}/>}/>*/}
+            {/*</Routes>*/}
+        </NextUIProvider>
+    </NextThemesProvider>
 }
 
 export default App;

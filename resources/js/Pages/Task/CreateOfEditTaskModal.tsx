@@ -9,29 +9,13 @@ import {fetchTags} from "@/services/TagsService";
 import {fetchCategories} from "@/services/CategoriesService";
 import {Category} from "@/Models/Category";
 import {Task} from "@/Models/Task";
-import {OutputData} from "@editorjs/editorjs";
-import {Flipped, spring} from "react-flip-toolkit";
 import {Button, Center, Container, Group, Input, Loader, MultiSelect, Select, Textarea, TextInput} from "@mantine/core";
-import MDEditor from "@uiw/react-md-editor";
 import {useMatch} from "@tanstack/react-location";
 import {LocationGenerics} from "@/routes";
+import { BoldExtension, CalloutExtension, ItalicExtension, MarkdownExtension } from 'remirror/extensions';
+import { useRemirror, Remirror, EditorComponent } from '@remirror/react';
+import 'remirror/styles/all.css';
 
-const onAppear = (el: any, i: any) => {
-    spring({
-        config: {overshootClamping: true},
-        values: {
-            scale: [0.25, 1],
-            opacity: [1, 1]
-        },
-        onUpdate: ({opacity, scale}) => {
-            el.style.opacity = opacity;
-            el.style.transform = `scale(${scale})`;
-        },
-        onComplete: () => {
-            // add callback logic here if necessary
-        }
-    });
-};
 
 type CreateOrEditTaskModalProps = {
     onClose: () => void
@@ -173,7 +157,19 @@ const CreateOfEditTaskModal: FC<CreateOrEditTaskModalProps> = () => {
                 // queryClient.invalidateQueries(['todos'])
             },
         },
-    )
+    );
+
+    const { manager, state } = useRemirror({
+        extensions: () => [
+            new BoldExtension(),
+            new ItalicExtension(),
+            new CalloutExtension({ defaultType: 'warn' }),
+            new MarkdownExtension()
+        ],
+        content: '',
+        selection: 'start',
+        stringHandler: 'markdown',
+    });
 
     function handleSubmit(e: any) {
         e.preventDefault();
@@ -247,11 +243,17 @@ const CreateOfEditTaskModal: FC<CreateOrEditTaskModalProps> = () => {
                             // value={selectedCategory}
                             // onChange={handleCategoryChange}
                         />
-                        <Input.Wrapper label="Текст задания">
-                            <MDEditor
-                                value={form.values.content}
-                                onChange={onEditorValueChanged}
-                            />
+                        <Input.Wrapper label="Текст задания" className='remirror-theme'>
+
+                                {/* the className is used to define css variables necessary for the editor */}
+                            <Remirror manager={manager} initialContent={state} >
+                                <EditorComponent />
+                            </Remirror>
+
+                            {/*<MDEditor*/}
+                            {/*    value={form.values.content}*/}
+                            {/*    onChange={onEditorValueChanged}*/}
+                            {/*/>*/}
                         </Input.Wrapper>
                         <Group position="right" mt="md">
                             <Button type={"submit"}>{editMode ? 'Сохранить' : 'Отправить на модерацию'}</Button>

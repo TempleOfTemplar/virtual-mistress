@@ -33,6 +33,7 @@ export const routes: Route<LocationGenerics>[] = [
             [
                 {path: "/", element: <ListTasksInfinite/>},
                 {path: "add", element: <CreateOrEditTask/>},
+                {path: ":taskId/edit", element: <CreateOrEditTask/>},
                 {   path: ":taskId",
                     element: <ViewTask/>,
                     loader: ({ params: { taskId } }) => {
@@ -42,7 +43,6 @@ export const routes: Route<LocationGenerics>[] = [
                             )
                     }
                 },
-                {path: "edit/:taskId", element: <CreateOrEditTask/>},
                 {path: "my", element: <ListMyTasks/>},
             ]
     },

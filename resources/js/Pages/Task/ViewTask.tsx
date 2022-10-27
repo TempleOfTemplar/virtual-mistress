@@ -19,36 +19,19 @@ import {
 import {Carousel} from "@mantine/carousel";
 import {Tag} from "@/Models/Tag";
 import {Toy} from "@/Models/Toy";
-import {spring} from "react-flip-toolkit";
 import {useQuery} from "@tanstack/react-query";
 import {fetchTaskById} from "@/services/TasksService";
 import CommentListItem from "@/Components/CommentListItem";
-import {VditorPreview} from "react-vditor";
 import {useForm} from "@mantine/form";
 import {useAddTaskCommentMutation} from "@/queries/useAddTaskCommentMutation";
 import useTaskCommentsQuery from "@/queries/useTaskCommentsQuery";
 import {motion} from "framer-motion";
 import {useMatch} from "@tanstack/react-location";
 import {LocationGenerics} from "@/routes";
+import {RemirrorRenderer} from "@remirror/react";
 
 const useStyles = createStyles((theme) => ({}));
 
-const onAppear = (el: any, i: any) => {
-    spring({
-        config: {overshootClamping: true},
-        values: {
-            scale: [0.25, 1],
-            opacity: [1, 1]
-        },
-        onUpdate: ({opacity, scale}) => {
-            el.style.opacity = opacity;
-            el.style.transform = `scale(${scale})`;
-        },
-        onComplete: () => {
-            // add callback logic here if necessary
-        }
-    });
-}
 
 interface AddCommentFormValues {
     comment: string;
@@ -80,7 +63,7 @@ const ViewTask: FC<any> = () => {
         }
 
         return (
-            <motion.div layoutId={`card-${taskId}`}>
+            <motion.div layoutId={`task-card-${taskId}`}>
                 <Container p={0}>
                     {taskLoading ? <Center style={{height: '100%'}} mt={48}><Loader size={150}/></Center> :
                         <Paper shadow={'sm'} p="md" m={0}>
@@ -154,7 +137,7 @@ const ViewTask: FC<any> = () => {
                             {task?.content ? <>
                                 <Divider my="xs" label="Текст задания" labelPosition="center"/>
                                 <TypographyStylesProvider>
-                                    <VditorPreview markdown={task.content}/>
+                                    <RemirrorRenderer json={task?.content} />
                                 </TypographyStylesProvider>
                             </> : null}
                         </Paper>}

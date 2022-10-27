@@ -1,8 +1,9 @@
 import React from 'react';
 import {AppShell, Footer} from "@mantine/core";
-import AppHeader from "@/Components/AppHeader";
 import {AnimateSharedLayout, LayoutGroup} from "framer-motion";
-import { Outlet } from '@tanstack/react-location';
+import {Outlet} from '@tanstack/react-location';
+import classes from './Layout.module.css';
+import AppNavbar from "@/Components/NavBar/NavBar";
 
 const Layout = () => {
     return (
@@ -14,13 +15,10 @@ const Layout = () => {
             }
             padding={0}
             header={
-                <AppHeader>
-                </AppHeader>
+                <AppNavbar/>
             }
         >
-            <LayoutGroup>
                 <Outlet/>
-            </LayoutGroup>
         </AppShell>
     );
 };

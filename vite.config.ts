@@ -11,6 +11,11 @@ export default defineConfig({
             host: '127.0.0.1',
         },
     },
+    css: {
+        modules: {
+            localsConvention: 'dashes'
+        },
+    },
     plugins: [
         mkcert(),
         laravel({
