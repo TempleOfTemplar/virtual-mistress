@@ -15,6 +15,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "infyomlabs/adminlte-templates": "^5.2",
         "infyomlabs/laravel-generator": "^5.4",
+        "innocenzi/laravel-vite": "0.2.*",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/socialite": "^5.5",

@@ -22,6 +22,6 @@ Route::controller(SocialController::class)->group(function () {
     Route::get('google/auth', 'googleRedirect')->name('auth.google');
 });
 
-Route::get('/{any}', function () {
-    return view('app');
-})->where('any', '^(?!api).*$');
+//Route::get('/{any}', function () {
+//    return view('app');
+//})->where('any', '^(?!api).*$');
