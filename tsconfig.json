@@ -29,6 +29,7 @@
     "include": [
         "resources/js/**/*"
     ],
+    "exclude": ["node_modules", "public"],
     "references": [
         {
             "path": "./tsconfig.node.json"
