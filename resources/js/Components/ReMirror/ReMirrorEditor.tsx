@@ -2,7 +2,7 @@ import '@remirror/styles/all.css';
 
 import { css } from '@emotion/css';
 import { createContextState } from 'create-context-state';
-import React from 'react';
+import React, {useEffect} from 'react';
 import jsx from 'refractor/lang/jsx.js';
 import md from 'refractor/lang/markdown.js';
 import typescript from 'refractor/lang/typescript.js';
@@ -155,7 +155,9 @@ const VisualEditor = () => {
 /**
  * The editor which is used to create the annotation. Supports formatting.
  */
-export const DualEditor: React.FC = () => {
+
+
+export const DualEditor: React.FC<{onMarkdownChange: (markdown: any)=>void}> = ({onMarkdownChange}) => {
     const visual = useRemirror({
         extensions,
         stringHandler: 'markdown',
@@ -177,7 +179,10 @@ export const DualEditor: React.FC = () => {
 
         stringHandler: 'html',
     });
-    const {state, setState} = markdown;
+    console.log("markdown", markdown);
+    let {state, setState, onChange} = markdown;
+    setState = onMarkdownChange;
+    // useEffect(()=>{onMarkdownChange(state);},[onChange])
 
     return (
         <DualEditorProvider visual={visual} markdown={markdown}>

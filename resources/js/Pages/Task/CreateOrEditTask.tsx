@@ -12,23 +12,38 @@ import api from "@/utils/Api";
 import {Tag} from "@/Models/Tag";
 import {Toy} from "@/Models/Toy";
 import {Category} from "@/Models/Category";
-import {useMatch, useNavigate} from "@tanstack/react-location";
-import {LocationGenerics} from "@/routes";
-import {EditorComponent, Remirror, useRemirror} from "@remirror/react";
-import {BoldExtension, CalloutExtension, ItalicExtension, MarkdownExtension} from "remirror/extensions";
+import {
+    BasicFormattingButtonGroup, DataTransferButtonGroup,
+    EditorComponent, HeadingLevelButtonGroup, HistoryButtonGroup, MarkdownToolbar,
+    Remirror,
+    ThemeProvider,
+    Toolbar,
+    useRemirror, VerticalDivider
+} from "@remirror/react";
+import {
+    BlockquoteExtension,
+    BoldExtension, BulletListExtension,
+    CalloutExtension, CodeBlockExtension, CodeExtension, HardBreakExtension, HeadingExtension,
+    ItalicExtension,
+    LinkExtension, ListItemExtension,
+    MarkdownExtension, OrderedListExtension,
+    StrikeExtension, TableExtension, TrailingNodeExtension
+} from "remirror/extensions";
 import {motion} from "framer-motion";
 import ReMirrorEditor, {DualEditor} from "@/Components/ReMirror/ReMirrorEditor";
-
-
+import {router} from "@/routes";
+import {ExtensionPriority, getThemeVar} from "remirror";
+import {css} from "@emotion/css";
+import { AllStyledComponent } from '@remirror/styles/emotion';
+import markdown from 'refractor/lang/markdown.js';
+import {StarterKit} from "@tiptap/starter-kit";
+import {EditorContent, useEditor} from "@tiptap/react";
 
 const CreateOrEditTask = () => {
-        const {
-            params: {taskId},
-        } = useMatch<LocationGenerics>();
-        console.log("taskId", taskId);
-        const navigation = useNavigate();
-        const theme: any = useTheme();
+        // @ts-ignore
+        const {params: {taskId}, navigate} = router.useMatch('/tasks/:taskId/edit')
 
+        const theme: any = useTheme();
         const editMode = useMemo(() => {
             return !(taskId === undefined);
         }, [taskId]);
@@ -49,17 +64,6 @@ const CreateOrEditTask = () => {
                 });
             }
         }, [task]);
-    const { manager, state } = useRemirror({
-        extensions: () => [
-            new BoldExtension(),
-            new ItalicExtension(),
-            new CalloutExtension({ defaultType: 'warn' }),
-            new MarkdownExtension()
-        ],
-        content: '',
-        selection: 'start',
-        stringHandler: 'markdown',
-    });
 
         // useEffect(() => {
         //     if (!loading) {
@@ -145,7 +149,7 @@ const CreateOrEditTask = () => {
                 },
                 // Always refetch after error or success:
                 onSuccess: () => {
-                    navigation({to: -1});
+                    navigate({to: -1});
                     // queryClient.cancelQueries(['tasks'])
                     // queryClient.invalidateQueries(['todos'])
                 },
@@ -191,7 +195,7 @@ const CreateOrEditTask = () => {
                             queryFromListPageItem.invalidate();
                         })
                     }
-                    navigation({to: '/tasks/my'});
+                    navigate({to: '/tasks/my'});
                     // queryClient.cancelQueries(['tasks'])
                     // queryClient.invalidateQueries(['todos'])
                 },
@@ -231,27 +235,15 @@ const CreateOrEditTask = () => {
         // );
         // const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-        function handleEditorChange(editorState: string) {
-            console.log("editorState", editorState);
-        }
-
-        const handleImageUpload = async (file: any) => {
-            console.log('handleImageUpload', file);
-            const formData = new FormData();
-            // var imagefile = document.querySelector('#file');
-            formData.append("image", file);
-            return api().post('/api/tasks/attachImage', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }).then((data) => {
-                console.log(data.data);
-                return data.data.url;
-            });
-        };
-
-
-
+    function handleEditorChange(val: any) {
+        console.log(val);
+    }
+    const editor = useEditor({
+        extensions: [
+            StarterKit,
+        ],
+        content: '<p>Hello World!</p>',
+    })
         return (
             <motion.div layoutId={`task-card-${taskId}`}>
                 <Container>
@@ -283,10 +275,13 @@ const CreateOrEditTask = () => {
                                     data={categoriesItems}
                                     {...form.getInputProps('category_id')}
                             />
-                            <Input.Wrapper label="Текст задания" data-color-mode={theme.colorScheme} className='remirror-theme'>
-                                <DualEditor/>
+                            <Input.Wrapper label="Текст задания" data-color-mode={theme.colorScheme}
+                                           className='remirror-theme'>
+                                <EditorContent editor={editor} />
+                                {/*<DualEditor onMarkdownChange={handleEditorChange}/>*/}
                                 {/*<Remirror manager={manager} initialContent={state} >*/}
-                                {/*    <EditorComponent />*/}
+
+                                {/*    /!*<EditorComponent />*!/*/}
                                 {/*</Remirror>*/}
                             </Input.Wrapper>
                             <Group position="right" mt="md">

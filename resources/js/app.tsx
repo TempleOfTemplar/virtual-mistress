@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
 import {ColorScheme, createStyles} from "@mantine/core";
 import {QueryClient} from "@tanstack/react-query";
-import {Router} from '@tanstack/react-location';
-import {routes} from "@/routes";
-import {location} from './routes';
-import {createTheme, NextUIProvider} from "@nextui-org/react";
+import {RouterProvider,} from '@tanstack/react-router'
+import {router} from "@/routes";
+import {createTheme, Loading, NextUIProvider} from "@nextui-org/react";
 import {ThemeProvider as NextThemesProvider} from 'next-themes';
 import Layout from "@/Components/Layout/Layout";
 import './global-styles.css';
@@ -124,6 +123,8 @@ const queryClient = new QueryClient({
 //         ]
 //     },
 // ]);
+
+
 const lightTheme = createTheme({
     type: 'light',
     theme: {}
@@ -163,30 +164,20 @@ function App() {
                                    dark: darkTheme.className
                                }}>
         <NextUIProvider>
-            <Router
-                location={location}
-                routes={routes}
+            <RouterProvider
+                router={router}
                 defaultPendingElement={
-                    <div>
-                        ...SPINNER...
+                    <div className={`p-2 text-2xl`}>
+                        <Loading size="xl" color="secondary"/>
                     </div>
                 }
-                // defaultLinkPreloadMaxAge={defaultLinkPreloadMaxAge}
-                // defaultLoaderMaxAge={defaultLoaderMaxAge}
-                // defaultPendingMs={defaultPendingMs}
-                // defaultPendingMinMs={defaultPendingMinMs}
+                // defaultLoaderMaxAge={5 * 1000}
+                // defaultLoaderGcMaxAge={10 * 1000}
                 // Normally, the options above aren't changing, but for this particular
                 // example, we need to key the router when they change
-                // key={[
-                //     defaultLinkPreloadMaxAge,
-                //     defaultLoaderMaxAge,
-                //     defaultPendingMs,
-                //     defaultPendingMinMs,
-                // ].join(".")}
             >
-                <Layout/>
-                {/*<ReactLocationDevtools position="bottom-right" />*/}
-            </Router>
+                <Layout />
+            </RouterProvider>
             {/*<RouterProvider router={router}/>*/}
 
             {/*<Routes>*/}

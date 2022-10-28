@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import {useForm} from "@mantine/form";
 import {useSanctum} from "react-sanctum";
-import {useLocation, useNavigate} from "@tanstack/react-location";
+import {router} from "@/routes";
 
 const useStyles = createStyles((theme) => ({
     socialLoginButtonIcon: {
@@ -25,8 +25,9 @@ const useStyles = createStyles((theme) => ({
 const Login = ()=> {
     const {classes, theme, cx} = useStyles();
     const {authenticated, user, signIn} = useSanctum();
-    let location = useLocation();
-    let navigate = useNavigate();
+    const {
+         navigate,
+    } = router.useMatch('/login')
 
     const form = useForm({
         initialValues: {

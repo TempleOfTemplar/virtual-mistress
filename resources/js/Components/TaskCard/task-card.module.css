@@ -5,6 +5,7 @@
 .flipContainer {
     position: relative;
     width: 100%;
+    perspective: 1000px;
     transform-style: preserve-3d;
     height: 485px;
 }

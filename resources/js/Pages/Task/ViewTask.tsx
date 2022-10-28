@@ -26,9 +26,9 @@ import {useForm} from "@mantine/form";
 import {useAddTaskCommentMutation} from "@/queries/useAddTaskCommentMutation";
 import useTaskCommentsQuery from "@/queries/useTaskCommentsQuery";
 import {motion} from "framer-motion";
-import {useMatch} from "@tanstack/react-location";
-import {LocationGenerics} from "@/routes";
 import {RemirrorRenderer} from "@remirror/react";
+import {router} from "@/routes";
+import {encodeJson} from "use-query-params";
 
 const useStyles = createStyles((theme) => ({}));
 
@@ -38,10 +38,9 @@ interface AddCommentFormValues {
 }
 
 const ViewTask: FC<any> = () => {
-        const {
-            params: {taskId},
-        } = useMatch<LocationGenerics>();
-
+        // @ts-ignore
+        const {params: {taskId}} = router.useMatch<any>('/tasks/:taskId');
+        console.log("taskId", taskId);
         const {data: task, isLoading: taskLoading} = useQuery(["tasks", taskId], () => fetchTaskById(taskId));
         const {data: comments, isLoading: commentsLoading} = useTaskCommentsQuery(taskId);
         const {classes, theme} = useStyles();
@@ -137,7 +136,10 @@ const ViewTask: FC<any> = () => {
                             {task?.content ? <>
                                 <Divider my="xs" label="Текст задания" labelPosition="center"/>
                                 <TypographyStylesProvider>
-                                    <RemirrorRenderer json={task?.content} />
+                                    <RemirrorRenderer json={{
+                                        type: 'doc',
+                                        content: []
+                                    }}/>
                                 </TypographyStylesProvider>
                             </> : null}
                         </Paper>}

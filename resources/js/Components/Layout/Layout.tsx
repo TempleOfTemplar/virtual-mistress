@@ -1,9 +1,7 @@
 import React from 'react';
 import {AppShell, Footer} from "@mantine/core";
-import {AnimateSharedLayout, LayoutGroup} from "framer-motion";
-import {Outlet} from '@tanstack/react-location';
-import classes from './Layout.module.css';
 import AppNavbar from "@/Components/NavBar/NavBar";
+import { Outlet } from '@tanstack/react-router';
 
 const Layout = () => {
     return (

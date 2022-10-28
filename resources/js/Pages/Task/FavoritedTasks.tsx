@@ -4,10 +4,13 @@ import {IconCirclePlus} from "@tabler/icons";
 import {useQuery} from "@tanstack/react-query";
 import {fetchFavoriteTasks} from "@/services/TasksService";
 import {Task} from "@/Models/Task";
-import {Link} from "@tanstack/react-location";
 import TaskCard from "@/Components/TaskCard/TaskCard";
+import {router} from "@/routes";
 
 const FavoritedTasks = () => {
+    const {
+        Link,
+    } = router.useMatch('/tasks/favorite');
     const {
         isLoading: favoriteTasksLoading,
         error: favoriteTasksError,

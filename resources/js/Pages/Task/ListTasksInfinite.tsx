@@ -29,11 +29,9 @@ import {useUpdateIsLiked} from "@/queries/useSetTaskLiked";
 import {TasksCursorPaginator} from "@/Models/CursorPaginator";
 import {VirtuosoGrid} from 'react-virtuoso'
 import {useModal} from "@ebay/nice-modal-react";
-import ViewTaskModal from "@/Components/ViewTaskModal";
-import {useNavigate, useSearch} from "@tanstack/react-location";
-import {LocationGenerics} from "@/routes";
 import TaskCard from "@/Components/TaskCard/TaskCard";
 import {LayoutGroup} from "framer-motion";
+import {router} from "@/routes";
 
 export const bounce = keyframes({
     '0%': {
@@ -100,8 +98,11 @@ const useStyles = createStyles((theme, params, getRef) => {
 const ListTasksInfinite = () => {
     const parentRef = useRef<any>()
     const {classes, theme} = useStyles();
-    const navigate = useNavigate<LocationGenerics>();
-    const taskModal = useModal(ViewTaskModal);
+    const {
+        search: query,
+        navigate,
+    } = router.useMatch('/tasks/')
+    console.log("query", query);
     // NiceModal.show(MyAntdModal, { name: 'Nate' })
     // useEffect(() => {
     // if (!!outlet) {
@@ -141,11 +142,10 @@ const ListTasksInfinite = () => {
     //     closeAllModals();
     // }
     // }, [outlet]);
-    const query = useSearch<LocationGenerics>();
     const updateIsFavorite = useUpdateIsFavorite("tasks", query);
     const updateIsLiked = useUpdateIsLiked("tasks", query);
 
-    const {search, category, toys, tags} = query;
+    const {search, category, toys, tags} = query as any;
 
     const {
         status,
@@ -382,7 +382,7 @@ const ListTasksInfinite = () => {
                         ) : status === 'error' ? (
                             <span>Error: {(tasksError as Error).message}</span>
                         ) : ( <LayoutGroup>
-                        (tasksList.length ? <VirtuosoGrid
+                            {tasksList.length ? <VirtuosoGrid
                                 useWindowScroll
                                 overscan={200}
                                 data={tasksList}
@@ -405,7 +405,7 @@ const ListTasksInfinite = () => {
                                 //     exit: velocity => Math.abs(velocity) < 30,
                                 //     change: (_, range) => console.log({range}),
                                 // }}
-                            /> : null)
+                            /> : null}
                             </LayoutGroup>
                             // <div ref={parentRef}
                             //      className="List"

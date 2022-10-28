@@ -5,12 +5,15 @@ import {useQuery} from "@tanstack/react-query";
 import {fetchMyTasks} from "@/services/TasksService";
 import {useUpdateIsFavorite} from "@/queries/useSetTaskFavorite";
 import {Task} from "@/Models/Task";
-import {Link} from "@tanstack/react-location";
 import TaskCard from "@/Components/TaskCard/TaskCard";
+import {router} from "@/routes";
 
 
 //href={route("tasks.edit", id)}
 const ListMyTasks = () => {
+    const {
+        Link,
+    } = router.useMatch('/tasks/my');
     const {
         isLoading: myTasksLoading,
         error: myTasksError,

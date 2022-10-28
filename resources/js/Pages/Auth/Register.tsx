@@ -3,10 +3,12 @@ import {Button, Group, TextInput,} from '@mantine/core';
 import {useForm} from "@mantine/form";
 import {withSanctum} from "react-sanctum";
 import axios from "axios";
-import {useNavigate} from "@tanstack/react-location";
+import {router} from "@/routes";
 
 const Register = ({setUser}) => {
-    const navigate = useNavigate();
+    const {
+        navigate,
+    } = router.useMatch('/register')
 
     // const { loading, userInfo, error, success } = useSelector(
     //     (state) => state.user

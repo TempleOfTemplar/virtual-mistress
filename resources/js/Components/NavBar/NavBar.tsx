@@ -3,9 +3,11 @@ import { useTheme as useNextTheme } from 'next-themes'
 import { Navbar, Link, Text, Avatar, Dropdown } from "@nextui-org/react";
 import classes from "./nav-bar.module.css";
 import AppLogo from "@/Components/AppLogo/AppLogo";
+import {router} from "@/routes";
 
 const AppNavbar = () => {
     const { setTheme } = useNextTheme();
+    const Link = router.Link;
     const collapseItems = [
         "Profile",
         "Dashboard",
@@ -37,12 +39,7 @@ const AppNavbar = () => {
                 hideIn="xs"
                 variant="highlight-rounded"
             >
-                <Navbar.Link as={Link} href="#">Features</Navbar.Link>
-                <Navbar.Link as={Link} isActive href="#">
-                    Customers
-                </Navbar.Link>
-                <Navbar.Link as={Link} href="#">Pricing</Navbar.Link>
-                <Navbar.Link as={Link} href="#">Company</Navbar.Link>
+                <Navbar.Link as={Link} to={'/tasks'} href="#">Tasks</Navbar.Link>
             </Navbar.Content>
             <Navbar.Content
                 css={{

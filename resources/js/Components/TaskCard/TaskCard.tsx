@@ -1,16 +1,17 @@
 import React, {FC, useRef, useState} from 'react';
 import {Task} from "@/Models/Task";
-import {Badge, Button, Card, Row, Text, Tooltip, Grid, Popover, Image} from "@nextui-org/react";
+import {Badge, Button, Card, Grid, Image, Popover, Row, Text, Tooltip} from "@nextui-org/react";
 import classNames from "classnames";
 import {useSanctum} from "react-sanctum";
 import {RWebShare} from "react-web-share";
 import {motion, useAnimationControls, useMotionValue, useTransform} from "framer-motion";
-import {Link} from "@tanstack/react-location";
-import {HiOutlineBookmark, HiOutlineChatBubbleLeftEllipsis, HiOutlineHeart, HiOutlineShare} from "react-icons/hi2";
+import {HiOutlineBookmark, HiOutlineChatBubbleLeftEllipsis, HiOutlineHeart, HiOutlineShare, HiOutlinePencilSquare} from "react-icons/hi2";
 import classes from './task-card.module.css'
 import {Tag} from "@/Models/Tag";
 import {Toy} from "@/Models/Toy";
 import CommentListItem from "@/Components/CommentListItem";
+import {router} from "@/routes";
+
 
 interface TaskCardProps {
     task: Task;
@@ -30,6 +31,13 @@ interface TaskCardProps {
 
 const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
     const ref = useRef(null)
+    const Link = router.Link;
+    // buildLink({
+    //     to: '/tasks/taskId',
+    //     params: {
+    //         taskId: task?.id as any,
+    //     },
+    // })
     // const isInView = useInView(ref)
     const [commentsOpened, setCommentsOpened] = useState<boolean>(false);
     const {user} = useSanctum();
@@ -106,8 +114,17 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
                     layoutId={`task-card-${task.id}`}
                     ref={ref}>
             <Card variant="bordered" className={classNames(classes.card, classes.faceFront)}>
-                <Card.Header>
+                <Card.Header css={{display: 'flex', justifyContent: 'space-between'}}>
                     <Text b>{task.title}</Text>
+                    <Button as={Link}
+                            to={`/tasks/:taskId/edit`}
+                            params={{taskId: task?.id}}
+                            color="warning"
+                            size="sm"
+                            auto
+                            ghost
+                    icon={<HiOutlinePencilSquare size={24}/>}>
+                    </Button>
                 </Card.Header>
                 <Card.Divider/>
                 <Card.Body>
@@ -120,8 +137,8 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
                     {task.tags?.length ?
                         <Grid.Container gap={0.5} justify="flex-start" className={classes.tagsSection}>
                             {task.tags.map((tag: Tag) => (
-                                <Grid>
-                                    <Badge size="sm" color="secondary" variant="bordered" key={tag?.tag_id}>
+                                <Grid key={tag?.tag_id}>
+                                    <Badge size="sm" color="secondary" variant="bordered">
                                         {tag?.name}
                                     </Badge>
                                 </Grid>
@@ -136,15 +153,15 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
                     {task.toys?.length ?
                         <Grid.Container gap={0.5} justify="flex-start" className={classes.toysSection}>
                             {task.toys.map((toy: Toy) => (
-                                <Grid>
+                                <Grid key={toy?.id}>
                                     <Popover>
                                         <Popover.Trigger>
-                                            <Badge size="sm" key={toy?.id} color="warning" variant="bordered">
+                                            <Badge size="sm" color="warning" variant="bordered">
                                                 {toy.title}
                                             </Badge>
                                         </Popover.Trigger>
                                         <Popover.Content>
-                                             <Image
+                                            <Image
                                                 width={120}
                                                 height={120}
                                                 src={toy.image}
@@ -164,113 +181,147 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
                 </Card.Body>
                 <Card.Divider/>
                 <Card.Footer>
-                    <Row justify="flex-end">
-                        <Button as={Link}
-                                to={`/tasks/${task.id}`}
-                                color="gradient"
-                                auto
-                                ghost>
-                            Читать
-                        </Button>
-                        <Row justify="flex-end">
-                            <Tooltip content={"Посмотреть комментарии"}>
-                                <Button
-                                    onClick={() => setFlipped(true)}
+                    <Grid.Container justify="space-between">
+                        <Grid>
+                            <Button as={Link}
+                                    to={`/tasks/:taskId`}
+                                    params={{taskId: task?.id}}
+                                    color="gradient"
+                                    size="sm"
                                     auto
-                                    ghost
-                                    color="error"
-                                    icon={<HiOutlineChatBubbleLeftEllipsis size={24} fill="currentColor"/>}
-                                />
-                            </Tooltip>
-                            {setLike ?
-                                <Button onClick={() => setLike(task)}
-                                        auto
-                                        ghost
-                                        color="error"
-                                        icon={<HiOutlineHeart size={24} fill="currentColor"/>}>
-                                    {task.likers_count}
-                                </Button>
-                                : null}
-                            {setFavorite ?
-                                <Button onClick={() => setFavorite(task)}
-                                        auto
-                                        ghost
-                                        color="error"
-                                        icon={<HiOutlineBookmark fill="currentColor" size={24}/>}
-                                        className={classNames(classes.bookmark, {[classes.bookmarkFilled]: task.has_favorited})}/>
-                                : null}
-                            <RWebShare
-                                sites={sitesToShare}
-                                disableNative={true}
-                                data={{
-                                    text: `Вам задание "${task.title}" от virtual-mistress`,
-                                    url: linkToTask,
-                                    title: "Поделиться заданием",
-                                }}>
-                                <Button auto
-                                        ghost
-                                        color="error"
-                                        icon={<HiOutlineShare fill="currentColor" size={24}/>}/>
-                            </RWebShare>
-                        </Row>
-                    </Row>
+                                    ghost>
+                                Читать
+                            </Button>
+                        </Grid>
+                        <Grid>
+                            <Grid.Container justify="flex-end" css={{gap: '0 8px'}}>
+                                <Grid>
+                                    <Tooltip content={"Посмотреть комментарии"}>
+                                        <Button
+                                            onPress={() => setFlipped(true)}
+                                            auto
+                                            ghost
+                                            size="sm"
+                                            color="primary"
+                                            icon={<HiOutlineChatBubbleLeftEllipsis size={24} fill="currentColor"/>}
+                                        />
+                                    </Tooltip>
+                                </Grid>
+                                {setLike ?
+                                    <Grid>
+                                        <Button onPress={() => setLike(task)}
+                                                auto
+                                                ghost
+                                                size="sm"
+                                                color="primary"
+                                                icon={<HiOutlineHeart size={24} fill="currentColor"/>}>
+                                            {task.likers_count}
+                                        </Button>
+                                    </Grid>
+                                    : null}
+                                {setFavorite ?
+                                    <Grid><Button onPress={() => setFavorite(task)}
+                                                  auto
+                                                  ghost
+                                                  size="sm"
+                                                  color="primary"
+                                                  icon={<HiOutlineBookmark fill="currentColor" size={24}/>}
+                                                  className={classNames(classes.bookmark, {[classes.bookmarkFilled]: task.has_favorited})}/>
+                                    </Grid>
+                                    : null}
+                                <Grid>
+                                    <RWebShare
+                                        sites={sitesToShare}
+                                        disableNative={true}
+                                        data={{
+                                            text: `Вам задание "${task.title}" от virtual-mistress`,
+                                            url: linkToTask,
+                                            title: "Поделиться заданием",
+                                        }}>
+                                        <Button auto
+                                                ghost
+                                                size="sm"
+                                                color="primary"
+                                                icon={<HiOutlineShare fill="currentColor" size={24}/>}/>
+                                    </RWebShare>
+                                </Grid>
+                            </Grid.Container>
+                        </Grid>
+                    </Grid.Container>
                 </Card.Footer>
             </Card>
             <Card variant="bordered" className={classNames(classes.card, classes.faceBack)}>
                 <Card.Body className={classes.commentsWrapper}>
-                             {task.comments?.map((comment) => <CommentListItem key={comment.id} comment={comment}/>)}
+                    {task.comments?.map((comment) => <CommentListItem key={comment.id} comment={comment}/>)}
                 </Card.Body>
                 <Card.Footer>
-                    <Row justify="flex-end">
-                        <Button as={Link}
-                                to={`/tasks/${task.id}`}
-                                color="gradient"
-                                auto
-                                ghost>
-                            Читать
-                        </Button>
-                        <Row justify="flex-end">
-                            <Tooltip content={"Посмотреть комментарии"}>
-                                <Button
-                                    onClick={() => setFlipped(false)}
+                    <Grid.Container justify="space-between">
+                        <Grid>
+                            <Button as={Link}
+                                    to={`/tasks/:taskId`}
+                                    params={{taskId: task?.id}}
+                                    color="gradient"
+                                    size="sm"
                                     auto
-                                    ghost
-                                    color="error"
-                                    icon={<HiOutlineChatBubbleLeftEllipsis size={24} fill="currentColor"/>}
-                                />
-                            </Tooltip>
-                            {setLike ?
-                                <Button onClick={() => setLike(task)}
-                                        auto
-                                        ghost
-                                        color="error"
-                                        icon={<HiOutlineHeart size={24} fill="currentColor"/>}>
-                                    {task.likers_count}
-                                </Button>
-                                : null}
-                            {setFavorite ?
-                                <Button onClick={() => setFavorite(task)}
-                                        auto
-                                        ghost
-                                        color="error"
-                                        icon={<HiOutlineBookmark fill="currentColor" size={24}/>}
-                                        className={classNames(classes.bookmark, {[classes.bookmarkFilled]: task.has_favorited})}/>
-                                : null}
-                            <RWebShare
-                                sites={sitesToShare}
-                                disableNative={true}
-                                data={{
-                                    text: `Вам задание "${task.title}" от virtual-mistress`,
-                                    url: linkToTask,
-                                    title: "Поделиться заданием",
-                                }}>
-                                <Button auto
-                                        ghost
-                                        color="error"
-                                        icon={<HiOutlineShare fill="currentColor" size={24}/>}/>
-                            </RWebShare>
-                        </Row>
-                    </Row>
+                                    ghost>
+                                Читать
+                            </Button>
+                        </Grid>
+                        <Grid>
+                            <Grid.Container justify="flex-end" css={{gap: '0 8px'}}>
+                                <Grid>
+                                    <Tooltip content={"Посмотреть комментарии"}>
+                                        <Button
+                                            onPress={() => setFlipped(false)}
+                                            auto
+                                            ghost
+                                            size="sm"
+                                            color="primary"
+                                            icon={<HiOutlineChatBubbleLeftEllipsis size={24} fill="currentColor"/>}
+                                        />
+                                    </Tooltip>
+                                </Grid>
+                                {setLike ?
+                                    <Grid>
+                                        <Button onPress={() => setLike(task)}
+                                                auto
+                                                ghost
+                                                size="sm"
+                                                color="primary"
+                                                icon={<HiOutlineHeart size={24} fill="currentColor"/>}>
+                                            {task.likers_count}
+                                        </Button>
+                                    </Grid>
+                                    : null}
+                                {setFavorite ?
+                                    <Grid><Button onPress={() => setFavorite(task)}
+                                                  auto
+                                                  ghost
+                                                  size="sm"
+                                                  color="primary"
+                                                  icon={<HiOutlineBookmark fill="currentColor" size={24}/>}
+                                                  className={classNames(classes.bookmark, {[classes.bookmarkFilled]: task.has_favorited})}/>
+                                    </Grid>
+                                    : null}
+                                <Grid>
+                                    <RWebShare
+                                        sites={sitesToShare}
+                                        disableNative={true}
+                                        data={{
+                                            text: `Вам задание "${task.title}" от virtual-mistress`,
+                                            url: linkToTask,
+                                            title: "Поделиться заданием",
+                                        }}>
+                                        <Button auto
+                                                ghost
+                                                size="sm"
+                                                color="primary"
+                                                icon={<HiOutlineShare fill="currentColor" size={24}/>}/>
+                                    </RWebShare>
+                                </Grid>
+                            </Grid.Container>
+                        </Grid>
+                    </Grid.Container>
                 </Card.Footer>
             </Card>
 
@@ -359,7 +410,7 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
             {/*                                                          variant="default"*/}
             {/*                                                          radius="md"*/}
             {/*                                                          size={36}*/}
-            {/*                                                          onClick={() => {*/}
+            {/*                                                          onPress={() => {*/}
             {/*                                                          }}>*/}
             {/*            <IconPencil size={18} stroke={1.5}/>*/}
             {/*        </ActionIcon> : null}*/}
@@ -376,7 +427,7 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
             {/*                <Tooltip label="Посмотреть комментарии">*/}
             {/*                    <ActionIcon variant="default" radius="md" size={36}>*/}
             {/*                        <IconMessage size={18}*/}
-            {/*                                     onClick={() => setFlipped(true)}*/}
+            {/*                                     onPress={() => setFlipped(true)}*/}
             {/*                                     className={classNames(classes.comment)}*/}
             {/*                                     stroke={1.5}/>*/}
             {/*                    </ActionIcon>*/}
@@ -384,12 +435,12 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
             {/*                {setLike ? <ActionIcon variant="default" radius="md" size={36}>*/}
             {/*                    <Text className={classes.likeCountText}>{task.likers_count}</Text>*/}
             {/*                    <IconHeart size={18}*/}
-            {/*                               onClick={() => setLike(task)}*/}
+            {/*                               onPress={() => setLike(task)}*/}
             {/*                               className={classNames(classes.like, {[classes.likeFilled]: task.has_liked})}*/}
             {/*                               stroke={1.5}/>*/}
             {/*                </ActionIcon> : null}*/}
             {/*                {setFavorite ? <ActionIcon variant="default" radius="md" size={36}*/}
-            {/*                                           onClick={() => setFavorite(task)}>*/}
+            {/*                                           onPress={() => setFavorite(task)}>*/}
             {/*                    <IconBookmark size={18}*/}
             {/*                                  className={classNames(classes.bookmark, {[classes.bookmarkFilled]: task.has_favorited})}*/}
             {/*                                  stroke={1.5}/>*/}
@@ -425,7 +476,7 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
             {/*                <Tooltip label="Посмотреть комментарии">*/}
             {/*                    <ActionIcon variant="default" radius="md" size={36}>*/}
             {/*                        <IconMessage size={18}*/}
-            {/*                                     onClick={() => setFlipped(false)}*/}
+            {/*                                     onPress={() => setFlipped(false)}*/}
             {/*                                     className={classNames(classes.comment)}*/}
             {/*                                     stroke={1.5}/>*/}
             {/*                    </ActionIcon>*/}
@@ -433,12 +484,12 @@ const TaskCard: FC<TaskCardProps> = ({task, setFavorite, setLike}) => {
             {/*                {setLike ? <ActionIcon variant="default" radius="md" size={36}>*/}
             {/*                    <Text className={classes.likeCountText}>{task.likers_count}</Text>*/}
             {/*                    <IconHeart size={18}*/}
-            {/*                               onClick={() => setLike(task)}*/}
+            {/*                               onPress={() => setLike(task)}*/}
             {/*                               className={classNames(classes.like, {[classes.likeFilled]: task.has_liked})}*/}
             {/*                               stroke={1.5}/>*/}
             {/*                </ActionIcon> : null}*/}
             {/*                {setFavorite ? <ActionIcon variant="default" radius="md" size={36}*/}
-            {/*                                           onClick={() => setFavorite(task)}>*/}
+            {/*                                           onPress={() => setFavorite(task)}>*/}
             {/*                    <IconBookmark size={18}*/}
             {/*                                  className={classNames(classes.bookmark, {[classes.bookmarkFilled]: task.has_favorited})}*/}
             {/*                                  stroke={1.5}/>*/}
